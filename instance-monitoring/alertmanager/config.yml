@@ -1,0 +1,21 @@
+global:
+  resolve_timeout: 2m
+  smtp_require_tls: true
+# alertmanager.yml
+route:
+  receiver: 'Mail Alert'
+  # group_by: [ alertname ]
+  repeat_interval: 30s
+  group_wait: 15s
+  group_interval: 15s
+
+receivers:
+  - name: 'Mail Alert'
+    email_configs:
+      - smarthost: 'mail.perogroupe.com:587'
+        auth_username: 'hcalebe@perogroupe.com'
+        auth_password: ":h4;8%2u7HBhL{M+kDm4"
+        from: 'hcalebe@perogroupe.com'
+        to: 'tobiasdonan@gmail.com'
+        headers:
+          subject: 'Prometheus Mail Alerts'

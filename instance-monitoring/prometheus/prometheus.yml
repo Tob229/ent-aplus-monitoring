@@ -1,0 +1,94 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+  # Attachez ces étiquettes à toute série chronologique ou alerte lors de la communication avec
+  # les systèmes externes (fédération, stockage distant, Alertmanager).
+  
+  external_labels:
+    monitor: 'docker-host-alpha'
+
+# Chargez et évaluez les règles de ce fichier toutes les secondes 'evaluation_interval'.
+
+rule_files:
+  - "alert.rules"
+
+# Une configuration de scrape contenant exactement un point de terminaison à scraper.
+
+scrape_configs:
+
+#local instances
+
+  - job_name: 'localnodeexporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['nodeexporter:9100']
+
+  - job_name: 'localcadvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  - job_name: 'prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['localhost:9090']
+
+#vps instances
+  - job_name: 'aplus_ent_nodeexporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['52.90.58.117:7770']
+
+  - job_name: 'aplus_entcadvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['52.90.58.117:7771']
+
+  - job_name: 'aplus_frontend'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['52.90.58.117:8000']
+
+# L'adresse et le port d'apache est a changer  (nous revenons dans local instance ou vps cela depends de votre config)
+
+#  - job_name: 'apache'
+#    scrape_interval: 10s
+#    static_configs:
+#     - targets: ['apache-exporter:9117']  
+
+#  - job_name: 'postgres-database'
+#    scrape_interval: 10s
+#    static_configs:
+#      - targets: ['postgres-exporter:9187']
+
+  - job_name: blackbox
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http//52.90.58.117:8000/
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox_exporter:9115
+  - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
+    static_configs:
+      - targets: ['blackbox_exporter:9115']
+
+#  - job_name: 'backend'
+#    scrape_interval: 10s
+#    static_configs:
+#      - targets: ['javaexporter:9113']
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets: 
+          - 'alertmanager:9093'
+

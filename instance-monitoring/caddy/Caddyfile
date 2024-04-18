@@ -1,0 +1,34 @@
+:3000 {
+    reverse_proxy grafana:3000  
+}
+
+:9080 {
+    basicauth /* {
+        {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
+    }    
+    reverse_proxy cadvisor:8080
+}
+
+:9090 {
+    basicauth /* {
+        {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
+    }
+    reverse_proxy prometheus:9090
+}
+
+:9093 {
+    basicauth /* {
+        {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
+    }
+    reverse_proxy alertmanager:9093
+}
+
+
+#:9187 {
+#    reverse_proxy postgres-exporter:9187  
+#}
+
+
+:9115 {
+    reverse_proxy blackbox-exporter:9115 
+}
