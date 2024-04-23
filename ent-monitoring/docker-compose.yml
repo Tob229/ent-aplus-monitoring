@@ -34,8 +34,6 @@ services:
 #      - "5432:5432"
 #    volumes:
 #      - pgdata:/var/lib/postgresql/data
-#      - ./configdb/postgresql.conf:/etc/postgresql/postgresql.conf
-#      - ./configdb/pg_hba.conf:/etc/postgresql/pg_hba.conf
 #    networks:
 #      - monitoring_network
 
@@ -46,7 +44,7 @@ services:
     ports:
       - "7772:9187"
     environment:
-      - DATA_SOURCE_NAME="postgresql://rubyric:rubyric@18.216.104.190:5432/rubyric?sslmode=disable"
+      - DATA_SOURCE_NAME=postgresql://rubyric:rubyric@3.21.240.147:5432/rubyric?sslmode=disable
 #    depends_on:
 #      - postgresql
     labels:
