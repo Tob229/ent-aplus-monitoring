@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3'
 
 services:
 
@@ -19,9 +19,43 @@ services:
       - "7770:9100"
     labels:
       org.label-schema.group: "monitoring"
+    networks:
+      - monitoring_network
+
+#  postgresql:
+#    image: postgres:latest
+#    container_name: postgresql
+#    restart: unless-stopped
+#    environment:
+#      POSTGRES_USER: rubyric
+#      POSTGRES_PASSWORD: rubyric
+#      POSTGRES_DB: rubyric
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#      - ./configdb/postgresql.conf:/etc/postgresql/postgresql.conf
+#      - ./configdb/pg_hba.conf:/etc/postgresql/pg_hba.conf
+#    networks:
+#      - monitoring_network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: postgres-exporter
+    restart: unless-stopped
+    ports:
+      - "7772:9187"
+    environment:
+      - DATA_SOURCE_NAME="postgresql://rubyric:rubyric@18.216.104.190:5432/rubyric?sslmode=disable"
+#    depends_on:
+#      - postgresql
+    labels:
+      org.label-schema.group: "monitoring"
+    networks:
+      - monitoring_network
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
     privileged: true
     devices:
@@ -37,4 +71,13 @@ services:
       - "7771:8080"
     labels:
       org.label-schema.group: "monitoring"
+    networks:
+      - monitoring_network
 
+volumes:
+  pgdata:
+
+
+networks:
+  monitoring_network:
+    driver: bridge
