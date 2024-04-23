@@ -11,7 +11,7 @@ volumes:
 services:
 
   prometheus:
-    image: prom/prometheus:v2.51.1
+    image: prom/prometheus:v2.48.0
     container_name: prometheus
     volumes:
       - ./prometheus:/etc/prometheus
@@ -42,6 +42,46 @@ services:
     restart: unless-stopped
     expose:
       - 9093
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  nodeexporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: nodeexporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    expose:
+      - 9100
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
+    restart: unless-stopped
+    expose:
+      - 8080
     networks:
       - monitor-net
     labels:
@@ -78,18 +118,55 @@ services:
 #    labels:
 #      org.label-schema.group: "monitoring"
 
+
+#  postgres-exporter:
+#    image: quay.io/prometheuscommunity/postgres-exporter:latest
+#    container_name: postgres-exporter
+#    expose:
+#      - 9187
+#    networks:
+#      - monitor-net
+#    environment:
+#      - DATA_SOURCE_NAME=postgresql://postgres:'sineb@2021'@192.168.100.101:5432/ # template1?sslmode=disable
+#    labels:
+#      org.label-schema.group: "monitoring"
+
+
+
+  blackbox_exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox-exporter
+    expose:
+      - "9115"  
+    volumes:
+      - ./blackbox:/config  # Montre le répertoire local contenant la configuration blackbox
+    command: --config.file=/config/blackbox.yml
+    restart: unless-stopped
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitoring"
+
   caddy:
     image: caddy:2.7.5
     container_name: caddy
     ports:
 #grafana"3000:3000"
       - "3000:3000"
+#cadvisor"9080:8080"
+      - "9080:8080"
 #pormetheus"9090:9090"
       - "9090:9090"
 #alertmanager"9093:9093"
       - "9093:9093"
 #push gateway"9091:9091"
 #      - "9091:9091"
+#postgress exporter"9187:9187"
+#      - "9187:9187"
+#blackblox exporter"9115:9115"
+      - "9115:9115"
+
+
     volumes:
       - ./caddy:/etc/caddy
     environment:
