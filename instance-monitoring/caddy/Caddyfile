@@ -17,7 +17,4 @@
 }
 
 
-#:9187 {
-#    reverse_proxy postgres-exporter:9187  
-#}
 
