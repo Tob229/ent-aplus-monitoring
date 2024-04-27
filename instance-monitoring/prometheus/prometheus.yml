@@ -24,42 +24,42 @@ scrape_configs:
   - job_name: 'aplus_ent_nodeexporter'
     scrape_interval: 5s
     static_configs:
-      - targets: ['3.21.240.147:7770']
+      - targets: ['18.117.179.158:7770']
 
   - job_name: 'aplus_entcadvisor'
     scrape_interval: 5s
     static_configs:
-      - targets: ['3.21.240.147:7771']
+      - targets: ['18.117.179.158:7771']
 
   - job_name: 'aplus_mooc_grader'
     metrics_path: /metrics
     static_configs:
-      - targets: ['3.21.240.147:8080']
+      - targets: ['18.117.179.158:8080']
 
   - job_name: 'aplus_frontend'
     metrics_path: /metrics
     static_configs:
-      - targets: ['3.21.240.147:8000']
+      - targets: ['18.117.179.158:8000']
 
   - job_name: 'aplus_mooc_jutut'
     metrics_path: /metrics
     static_configs:
-      - targets: ['3.21.240.147:8080']
+      - targets: ['18.117.179.158:8080']
 
   - job_name: 'aplus_acos'
     metrics_path: /metrics
     static_configs:
-      - targets: ['3.21.240.147:3000']
+      - targets: ['18.117.179.158:3000']
 
   - job_name: 'aplus_radar'
     metrics_path: /metrics
     static_configs:
-      - targets: ['3.21.240.147:8001']
+      - targets: ['18.117.179.158:8001']
 
   - job_name: 'aplus_rubyric_db'
     scrape_interval: 10s
     static_configs:
-      - targets: ['3.21.240.147:7772']
+      - targets: ['18.117.179.158:7772']
 
 # Alerte  Manager
 
