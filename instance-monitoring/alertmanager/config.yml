@@ -14,7 +14,7 @@ receivers:
     email_configs:
       - smarthost: 'mail.perogroupe.com:587'
         auth_username: 'hcalebe@perogroupe.com'
-        auth_password: ":h4;8%2u7HBhL{M+kDm4"
+        auth_password: ":b5@5nKy6M)tU._(s48GV"
         from: 'hcalebe@perogroupe.com'
         to: 'tobiasdonan@gmail.com'
         headers:
