@@ -166,7 +166,6 @@ groups:
         summary: Host CPU high iowait (instance {{ $labels.instance }})
         description: "CPU iowait > 10%. A high iowait means that you are disk or network bound.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-groups:
 
 - name: GoogleCadvisor
 
@@ -244,7 +243,6 @@ groups:
         summary: Container Low Memory usage (instance {{ $labels.instance }})
         description: "Container Memory usage is under 20% for 1 week. Consider reducing the allocated memory.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-groups:
 
 - name: MicroserviceDatabase
 
@@ -439,42 +437,3 @@ groups:
         summary: Postgresql invalid index (instance {{ $labels.instance }})
         description: "The table {{ $labels.relname }} has an invalid index: {{ $labels.indexrelname }}. You should execute `DROP INDEX {{ $labels.indexrelname }};`\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-groups:
-
-- name: RequeteByMicroservice
-
-  rules:
-            {
-            alert: 'DjangoHighHttp4xxErrorRate',
-            expr: |||
-              sum(
-                rate(
-                  django_http_responses_total_by_status_view_method_total{
-                    %(djangoSelector)s,
-                    status=~"^4.*",
-                    view!~"%(djangoIgnoredViews)s"
-                  }[%(django4xxInterval)s]
-                )
-              )  by (namespace, job, view)
-              /
-              sum(
-                rate(
-                  django_http_responses_total_by_status_view_method_total{
-                    %(djangoSelector)s,
-                    view!~"%(djangoIgnoredViews)s"
-                  }[%(django4xxInterval)s]
-                )
-              )  by (namespace, job, view)
-              * 100 > %(django4xxThreshold)s
-            ||| % $._config,
-            'for': '1m',
-            annotations: {
-              summary: 'Django high HTTP 4xx error rate.',
-              description: 'More than %(django4xxThreshold)s%% HTTP requests with status 4xx for {{ $labels.job }}/{{ $labels.view }} the past %(django4xxInterval)s.' % $._config,
-              dashboard_url: $._config.requestsByViewDashboardUrl + '?var-namespace={{ $labels.namespace }}&var-job={{ $labels.job }}&var-view={{ $labels.view }}',
-            },
-            labels: {
-              severity: $._config.django4xxSeverity,
-            },
-          },
-          
