@@ -167,81 +167,81 @@ groups:
         description: "CPU iowait > 10%. A high iowait means that you are disk or network bound.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
 
-- name: GoogleCadvisor
+- name: Microservice
 
   rules:
 
-    - alert: ContainerKilled
+    - alert: MicroserviceKilled
       expr: 'time() - container_last_seen > 60'
       for: 0m
       labels:
         severity: warning
       annotations:
-        summary: Container killed (instance {{ $labels.instance }})
-        description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice killed (instance {{ $labels.instance }})
+        description: "A Microservice has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: ContainerAbsent
+    - alert: MicroserviceAbsent
       expr: 'absent(container_last_seen)'
       for: 5m
       labels:
         severity: warning
       annotations:
-        summary: Container absent (instance {{ $labels.instance }})
-        description: "A container is absent for 5 min\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice absent (instance {{ $labels.instance }})
+        description: "A Microservice is absent for 5 min\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: ContainerHighCpuUtilization
+    - alert: MicroserviceHighCpuUtilization
       expr: '(sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod, container) / sum(container_spec_cpu_quota{container!=""}/container_spec_cpu_period{container!=""}) by (pod, container) * 100) > 80'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Container High CPU utilization (instance {{ $labels.instance }})
-        description: "Container CPU utilization is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice High CPU utilization (instance {{ $labels.instance }})
+        description: "Microservice CPU utilization is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: ContainerHighMemoryUsage
+    - alert: MicroserviceHighMemoryUsage
       expr: '(sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) > 80'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Container High Memory usage (instance {{ $labels.instance }})
-        description: "Container Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice High Memory usage (instance {{ $labels.instance }})
+        description: "Microservice Memory usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: ContainerVolumeUsage
+    - alert: MicroserviceVolumeUsage
       expr: '(1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) / sum(container_fs_inodes_total) BY (instance))) * 100 > 80'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Container Volume usage (instance {{ $labels.instance }})
-        description: "Container Volume usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice Volume usage (instance {{ $labels.instance }})
+        description: "Microservice Volume usage is above 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: ContainerHighThrottleRate
+    - alert: MicroserviceHighThrottleRate
       expr: 'sum(increase(container_cpu_cfs_throttled_periods_total{container!=""}[5m])) by (container, pod, namespace) / sum(increase(container_cpu_cfs_periods_total[5m])) by (container, pod, namespace) > ( 25 / 100 )'
       for: 5m
       labels:
         severity: warning
       annotations:
-        summary: Container high throttle rate (instance {{ $labels.instance }})
-        description: "Container is being throttled\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice high throttle rate (instance {{ $labels.instance }})
+        description: "Microservice is being throttled\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: ContainerLowCpuUtilization
+    - alert: MicroserviceLowCpuUtilization
       expr: '(sum(rate(container_cpu_usage_seconds_total{container!=""}[5m])) by (pod, container) / sum(container_spec_cpu_quota{container!=""}/container_spec_cpu_period{container!=""}) by (pod, container) * 100) < 20'
       for: 7d
       labels:
         severity: info
       annotations:
-        summary: Container Low CPU utilization (instance {{ $labels.instance }})
-        description: "Container CPU utilization is under 20% for 1 week. Consider reducing the allocated CPU.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice Low CPU utilization (instance {{ $labels.instance }})
+        description: "Microservice CPU utilization is under 20% for 1 week. Consider reducing the allocated CPU.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: ContainerLowMemoryUsage
+    - alert: MicroserviceLowMemoryUsage
       expr: '(sum(container_memory_working_set_bytes{name!=""}) BY (instance, name) / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) * 100) < 20'
       for: 7d
       labels:
         severity: info
       annotations:
-        summary: Container Low Memory usage (instance {{ $labels.instance }})
-        description: "Container Memory usage is under 20% for 1 week. Consider reducing the allocated memory.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: Microservice Low Memory usage (instance {{ $labels.instance }})
+        description: "Microservice Memory usage is under 20% for 1 week. Consider reducing the allocated memory.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
 
 - name: MicroserviceDatabase
