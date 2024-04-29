@@ -477,36 +477,4 @@ groups:
               severity: $._config.django4xxSeverity,
             },
           },
-          {
-            alert: 'DjangoHighHttp5xxErrorRate',
-            expr: |||
-              sum(
-                rate(
-                  django_http_responses_total_by_status_view_method_total{
-                    %(djangoSelector)s,
-                    status=~"^5.*",
-                    view!~"%(djangoIgnoredViews)s"
-                  }[%(django5xxInterval)s]
-                )
-              )  by (namespace, job, view)
-              /
-              sum(
-                rate(
-                  django_http_responses_total_by_status_view_method_total{
-                    %(djangoSelector)s,
-                    view!~"%(djangoIgnoredViews)s"
-                  }[%(django5xxInterval)s]
-                )
-              )  by (namespace, job, view)
-              * 100 > %(django5xxThreshold)s
-            ||| % $._config,
-            'for': '1m',
-            annotations: {
-              summary: 'Django high HTTP 5xx error rate.',
-              description: 'More than %(django5xxThreshold)s%% HTTP requests with status 5xx for {{ $labels.job }}/{{ $labels.view }} the past %(django5xxInterval)s.' % $._config,
-              dashboard_url: $._config.requestsByViewDashboardUrl + '?var-namespace={{ $labels.namespace }}&var-job={{ $labels.job }}&var-view={{ $labels.view }}',
-            },
-            labels: {
-              severity: $._config.django5xxSeverity,
-            },
-          },
+          
