@@ -14,8 +14,8 @@ receivers:
     email_configs:
       - smarthost: 'mail.perogroupe.com:587'
         auth_username: 'hcalebe@perogroupe.com'
-        auth_password: ":b5@5nKy6M)tU._(s48GV"
+        auth_password: "S.3.SvW.h6h8.Qy6"
         from: 'hcalebe@perogroupe.com'
         to: 'tobiasdonan@gmail.com'
         headers:
-          subject: 'Prometheus Mail Alerts'
+          subject: 'Alertes Prometheus pour lENT Aplus'

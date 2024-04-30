@@ -1,169 +1,169 @@
 groups:
 
-- name: VPSAlert
+- name: AplusEntVPSAlert
 
   rules:
 
-    - alert: HostOutOfMemory
+    - alert: AplusEntVPSOutOfMemory
       expr: '(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host out of memory (instance {{ $labels.instance }})
+        summary: AplusEntVPS out of memory (instance {{ $labels.instance }})
         description: "Node memory is filling up (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostMemoryUnderMemoryPressure
+    - alert: AplusEntVPSMemoryUnderMemoryPressure
       expr: '(rate(node_vmstat_pgmajfault[1m]) > 1000) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host memory under memory pressure (instance {{ $labels.instance }})
+        summary: AplusEntVPS memory under memory pressure (instance {{ $labels.instance }})
         description: "The node is under heavy memory pressure. High rate of major page faults\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostMemoryIsUnderutilized
+    - alert: AplusEntVPSMemoryIsUnderutilized
       expr: '(100 - (avg_over_time(node_memory_MemAvailable_bytes[30m]) / node_memory_MemTotal_bytes * 100) < 20) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 1w
       labels:
         severity: info
       annotations:
-        summary: Host Memory is underutilized (instance {{ $labels.instance }})
+        summary: AplusEntVPS Memory is underutilized (instance {{ $labels.instance }})
         description: "Node memory is < 20% for 1 week. Consider reducing memory space. (instance {{ $labels.instance }})\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostUnusualNetworkThroughputIn
+    - alert: AplusEntVPSUnusualNetworkThroughputIn
       expr: '(sum by (instance) (rate(node_network_receive_bytes_total[2m])) / 1024 / 1024 > 100) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 5m
       labels:
         severity: warning
       annotations:
-        summary: Host unusual network throughput in (instance {{ $labels.instance }})
-        description: "Host network interfaces are probably receiving too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusEntVPS unusual network throughput in (instance {{ $labels.instance }})
+        description: "AplusEntVPS network interfaces are probably receiving too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostUnusualNetworkThroughputOut
+    - alert: AplusEntVPSUnusualNetworkThroughputOut
       expr: '(sum by (instance) (rate(node_network_transmit_bytes_total[2m])) / 1024 / 1024 > 100) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 5m
       labels:
         severity: warning
       annotations:
-        summary: Host unusual network throughput out (instance {{ $labels.instance }})
-        description: "Host network interfaces are probably sending too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusEntVPS unusual network throughput out (instance {{ $labels.instance }})
+        description: "AplusEntVPS network interfaces are probably sending too much data (> 100 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostUnusualDiskReadRate
+    - alert: AplusEntVPSUnusualDiskReadRate
       expr: '(sum by (instance) (rate(node_disk_read_bytes_total[2m])) / 1024 / 1024 > 50) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 5m
       labels:
         severity: warning
       annotations:
-        summary: Host unusual disk read rate (instance {{ $labels.instance }})
+        summary: AplusEntVPS unusual disk read rate (instance {{ $labels.instance }})
         description: "Disk is probably reading too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostUnusualDiskWriteRate
+    - alert: AplusEntVPSUnusualDiskWriteRate
       expr: '(sum by (instance) (rate(node_disk_written_bytes_total[2m])) / 1024 / 1024 > 50) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host unusual disk write rate (instance {{ $labels.instance }})
+        summary: AplusEntVPS unusual disk write rate (instance {{ $labels.instance }})
         description: "Disk is probably writing too much data (> 50 MB/s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostOutOfDiskSpace
+    - alert: AplusEntVPSOutOfDiskSpace
       expr: '((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host out of disk space (instance {{ $labels.instance }})
+        summary: AplusEntVPS out of disk space (instance {{ $labels.instance }})
         description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostDiskWillFillIn24Hours
+    - alert: AplusEntVPSDiskWillFillIn24Hours
       expr: '((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
+        summary: AplusEntVPS disk will fill in 24 hours (instance {{ $labels.instance }})
         description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostOutOfInodes
+    - alert: AplusEntVPSOutOfInodes
       expr: '(node_filesystem_files_free{fstype!="msdosfs"} / node_filesystem_files{fstype!="msdosfs"} * 100 < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host out of inodes (instance {{ $labels.instance }})
+        summary: AplusEntVPS out of inodes (instance {{ $labels.instance }})
         description: "Disk is almost running out of available inodes (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostFilesystemDeviceError
+    - alert: AplusEntVPSFilesystemDeviceError
       expr: 'node_filesystem_device_error == 1'
       for: 0m
       labels:
         severity: critical
       annotations:
-        summary: Host filesystem device error (instance {{ $labels.instance }})
+        summary: AplusEntVPS filesystem device error (instance {{ $labels.instance }})
         description: "{{ $labels.instance }}: Device error with the {{ $labels.mountpoint }} filesystem\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostInodesWillFillIn24Hours
+    - alert: AplusEntVPSInodesWillFillIn24Hours
       expr: '(node_filesystem_files_free{fstype!="msdosfs"} / node_filesystem_files{fstype!="msdosfs"} * 100 < 10 and predict_linear(node_filesystem_files_free{fstype!="msdosfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly{fstype!="msdosfs"} == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host inodes will fill in 24 hours (instance {{ $labels.instance }})
+        summary: AplusEntVPS inodes will fill in 24 hours (instance {{ $labels.instance }})
         description: "Filesystem is predicted to run out of inodes within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostUnusualDiskReadLatency
+    - alert: AplusEntVPSUnusualDiskReadLatency
       expr: '(rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1 and rate(node_disk_reads_completed_total[1m]) > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host unusual disk read latency (instance {{ $labels.instance }})
+        summary: AplusEntVPS unusual disk read latency (instance {{ $labels.instance }})
         description: "Disk latency is growing (read operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostUnusualDiskWriteLatency
+    - alert: AplusEntVPSUnusualDiskWriteLatency
       expr: '(rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.1 and rate(node_disk_writes_completed_total[1m]) > 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Host unusual disk write latency (instance {{ $labels.instance }})
+        summary: AplusEntVPS unusual disk write latency (instance {{ $labels.instance }})
         description: "Disk latency is growing (write operations > 100ms)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostHighCpuLoad
+    - alert: AplusEntVPSHighCpuLoad
       expr: '(sum by (instance) (avg by (mode, instance) (rate(node_cpu_seconds_total{mode!="idle"}[2m]))) > 0.8) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 10m
       labels:
         severity: warning
       annotations:
-        summary: Host high CPU load (instance {{ $labels.instance }})
+        summary: AplusEntVPS high CPU load (instance {{ $labels.instance }})
         description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostCpuIsUnderutilized
+    - alert: AplusEntVPSCpuIsUnderutilized
       expr: '(100 - (rate(node_cpu_seconds_total{mode="idle"}[30m]) * 100) < 20) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 1w
       labels:
         severity: info
       annotations:
-        summary: Host CPU is underutilized (instance {{ $labels.instance }})
+        summary: AplusEntVPS CPU is underutilized (instance {{ $labels.instance }})
         description: "CPU load is < 20% for 1 week. Consider reducing the number of CPUs.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostCpuStealNoisyNeighbor
+    - alert: AplusEntVPSCpuStealNoisyNeighbor
       expr: '(avg by(instance) (rate(node_cpu_seconds_total{mode="steal"}[5m])) * 100 > 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 0m
       labels:
         severity: warning
       annotations:
-        summary: Host CPU steal noisy neighbor (instance {{ $labels.instance }})
+        summary: AplusEntVPS CPU steal noisy neighbor (instance {{ $labels.instance }})
         description: "CPU steal is > 10%. A noisy neighbor is killing VM performances or a spot instance may be out of credit.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: HostCpuHighIowait
+    - alert: AplusEntVPSCpuHighIowait
       expr: '(avg by (instance) (rate(node_cpu_seconds_total{mode="iowait"}[5m])) * 100 > 10) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
       for: 0m
       labels:
         severity: warning
       annotations:
-        summary: Host CPU high iowait (instance {{ $labels.instance }})
+        summary: AplusEntVPS CPU high iowait (instance {{ $labels.instance }})
         description: "CPU iowait > 10%. A high iowait means that you are disk or network bound.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
 
@@ -248,192 +248,192 @@ groups:
 
   rules:
 
-    - alert: PostgresqlDown
+    - alert: AplusDataBaseDown
       expr: 'pg_up == 0'
       for: 0m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql down (instance {{ $labels.instance }})
-        description: "Postgresql instance is down\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase down (instance {{ $labels.instance }})
+        description: "AplusDataBase instance is down\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlRestarted
+    - alert: AplusDataBaseRestarted
       expr: 'time() - pg_postmaster_start_time_seconds < 60'
       for: 0m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql restarted (instance {{ $labels.instance }})
-        description: "Postgresql restarted\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase restarted (instance {{ $labels.instance }})
+        description: "AplusDataBase restarted\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlExporterError
+    - alert: AplusDataBaseExporterError
       expr: 'pg_exporter_last_scrape_error > 0'
       for: 0m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql exporter error (instance {{ $labels.instance }})
-        description: "Postgresql exporter is showing errors. A query may be buggy in query.yaml\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase exporter error (instance {{ $labels.instance }})
+        description: "AplusDataBase exporter is showing errors. A query may be buggy in query.yaml\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlTableNotAutoVacuumed
+    - alert: AplusDataBaseTableNotAutoVacuumed
       expr: '(pg_stat_user_tables_last_autovacuum > 0) and (time() - pg_stat_user_tables_last_autovacuum) > 60 * 60 * 24 * 10'
       for: 0m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql table not auto vacuumed (instance {{ $labels.instance }})
+        summary: AplusDataBase table not auto vacuumed (instance {{ $labels.instance }})
         description: "Table {{ $labels.relname }} has not been auto vacuumed for 10 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlTableNotAutoAnalyzed
+    - alert: AplusDataBaseTableNotAutoAnalyzed
       expr: '(pg_stat_user_tables_last_autoanalyze > 0) and (time() - pg_stat_user_tables_last_autoanalyze) > 24 * 60 * 60 * 10'
       for: 0m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql table not auto analyzed (instance {{ $labels.instance }})
+        summary: AplusDataBase table not auto analyzed (instance {{ $labels.instance }})
         description: "Table {{ $labels.relname }} has not been auto analyzed for 10 days\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlTooManyConnections
+    - alert: AplusDataBaseTooManyConnections
       expr: 'sum by (instance, job, server) (pg_stat_activity_count) > min by (instance, job, server) (pg_settings_max_connections * 0.8)'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql too many connections (instance {{ $labels.instance }})
-        description: "PostgreSQL instance has too many connections (> 80%).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase too many connections (instance {{ $labels.instance }})
+        description: "AplusDataBase instance has too many connections (> 80%).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlNotEnoughConnections
+    - alert: AplusDataBaseNotEnoughConnections
       expr: 'sum by (datname) (pg_stat_activity_count{datname!~"template.*|postgres"}) < 5'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql not enough connections (instance {{ $labels.instance }})
-        description: "PostgreSQL instance should have more connections (> 5)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase not enough connections (instance {{ $labels.instance }})
+        description: "AplusDataBase instance should have more connections (> 5)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlDeadLocks
+    - alert: AplusDataBaseDeadLocks
       expr: 'increase(pg_stat_database_deadlocks{datname!~"template.*|postgres"}[1m]) > 5'
       for: 0m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql dead locks (instance {{ $labels.instance }})
-        description: "PostgreSQL has dead-locks\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase dead locks (instance {{ $labels.instance }})
+        description: "AplusDataBase has dead-locks\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlHighRollbackRate
+    - alert: AplusDataBaseHighRollbackRate
       expr: 'sum by (namespace,datname) ((rate(pg_stat_database_xact_rollback{datname!~"template.*|postgres",datid!="0"}[3m])) / ((rate(pg_stat_database_xact_rollback{datname!~"template.*|postgres",datid!="0"}[3m])) + (rate(pg_stat_database_xact_commit{datname!~"template.*|postgres",datid!="0"}[3m])))) > 0.02'
       for: 0m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql high rollback rate (instance {{ $labels.instance }})
+        summary: AplusDataBase high rollback rate (instance {{ $labels.instance }})
         description: "Ratio of transactions being aborted compared to committed is > 2 %\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlCommitRateLow
+    - alert: AplusDataBaseCommitRateLow
       expr: 'rate(pg_stat_database_xact_commit[1m]) < 10'
       for: 2m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql commit rate low (instance {{ $labels.instance }})
-        description: "Postgresql seems to be processing very few transactions\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase commit rate low (instance {{ $labels.instance }})
+        description: "AplusDataBase seems to be processing very few transactions\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlLowXidConsumption
+    - alert: AplusDataBaseLowXidConsumption
       expr: 'rate(pg_txid_current[1m]) < 5'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql low XID consumption (instance {{ $labels.instance }})
-        description: "Postgresql seems to be consuming transaction IDs very slowly\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase low XID consumption (instance {{ $labels.instance }})
+        description: "AplusDataBase seems to be consuming transaction IDs very slowly\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlHighRateStatementTimeout
-      expr: 'rate(postgresql_errors_total{type="statement_timeout"}[1m]) > 3'
+    - alert: AplusDataBaseHighRateStatementTimeout
+      expr: 'rate(AplusDataBase_errors_total{type="statement_timeout"}[1m]) > 3'
       for: 0m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql high rate statement timeout (instance {{ $labels.instance }})
+        summary: AplusDataBase high rate statement timeout (instance {{ $labels.instance }})
         description: "Postgres transactions showing high rate of statement timeouts\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlHighRateDeadlock
-      expr: 'increase(postgresql_errors_total{type="deadlock_detected"}[1m]) > 1'
+    - alert: AplusDataBaseHighRateDeadlock
+      expr: 'increase(AplusDataBase_errors_total{type="deadlock_detected"}[1m]) > 1'
       for: 0m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql high rate deadlock (instance {{ $labels.instance }})
+        summary: AplusDataBase high rate deadlock (instance {{ $labels.instance }})
         description: "Postgres detected deadlocks\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlUnusedReplicationSlot
+    - alert: AplusDataBaseUnusedReplicationSlot
       expr: 'pg_replication_slots_active == 0'
       for: 1m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql unused replication slot (instance {{ $labels.instance }})
+        summary: AplusDataBase unused replication slot (instance {{ $labels.instance }})
         description: "Unused Replication Slots\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlTooManyDeadTuples
+    - alert: AplusDataBaseTooManyDeadTuples
       expr: '((pg_stat_user_tables_n_dead_tup > 10000) / (pg_stat_user_tables_n_live_tup + pg_stat_user_tables_n_dead_tup)) >= 0.1'
       for: 2m
       labels:
         severity: warning
       annotations:
-        summary: Postgresql too many dead tuples (instance {{ $labels.instance }})
-        description: "PostgreSQL dead tuples is too large\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+        summary: AplusDataBase too many dead tuples (instance {{ $labels.instance }})
+        description: "AplusDataBase dead tuples is too large\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlConfigurationChanged
+    - alert: AplusDataBaseConfigurationChanged
       expr: '{__name__=~"pg_settings_.*"} != ON(__name__) {__name__=~"pg_settings_([^t]|t[^r]|tr[^a]|tra[^n]|tran[^s]|trans[^a]|transa[^c]|transac[^t]|transact[^i]|transacti[^o]|transactio[^n]|transaction[^_]|transaction_[^r]|transaction_r[^e]|transaction_re[^a]|transaction_rea[^d]|transaction_read[^_]|transaction_read_[^o]|transaction_read_o[^n]|transaction_read_on[^l]|transaction_read_onl[^y]).*"} OFFSET 5m'
       for: 0m
       labels:
         severity: info
       annotations:
-        summary: Postgresql configuration changed (instance {{ $labels.instance }})
+        summary: AplusDataBase configuration changed (instance {{ $labels.instance }})
         description: "Postgres Database configuration change has occurred\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlSslCompressionActive
+    - alert: AplusDataBaseSslCompressionActive
       expr: 'sum(pg_stat_ssl_compression) > 0'
       for: 0m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql SSL compression active (instance {{ $labels.instance }})
+        summary: AplusDataBase SSL compression active (instance {{ $labels.instance }})
         description: "Database connections with SSL compression enabled. This may add significant jitter in replication delay. Replicas should turn off SSL compression via `sslcompression=0` in `recovery.conf`.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlTooManyLocksAcquired
+    - alert: AplusDataBaseTooManyLocksAcquired
       expr: '((sum (pg_locks_count)) / (pg_settings_max_locks_per_transaction * pg_settings_max_connections)) > 0.20'
       for: 2m
       labels:
         severity: critical
       annotations:
-        summary: Postgresql too many locks acquired (instance {{ $labels.instance }})
+        summary: AplusDataBase too many locks acquired (instance {{ $labels.instance }})
         description: "Too many locks acquired on the database. If this alert happens frequently, we may need to increase the postgres setting max_locks_per_transaction.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlBloatIndexHigh(>80%)
+    - alert: AplusDataBaseBloatIndexHigh(>80%)
       expr: 'pg_bloat_btree_bloat_pct > 80 and on (idxname) (pg_bloat_btree_real_size > 100000000)'
       for: 1h
       labels:
         severity: warning
       annotations:
-        summary: Postgresql bloat index high (> 80%) (instance {{ $labels.instance }})
+        summary: AplusDataBase bloat index high (> 80%) (instance {{ $labels.instance }})
         description: "The index {{ $labels.idxname }} is bloated. You should execute `REINDEX INDEX CONCURRENTLY {{ $labels.idxname }};`\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlBloatTableHigh(>80%)
+    - alert: AplusDataBaseBloatTableHigh(>80%)
       expr: 'pg_bloat_table_bloat_pct > 80 and on (relname) (pg_bloat_table_real_size > 200000000)'
       for: 1h
       labels:
         severity: warning
       annotations:
-        summary: Postgresql bloat table high (> 80%) (instance {{ $labels.instance }})
+        summary: AplusDataBase bloat table high (> 80%) (instance {{ $labels.instance }})
         description: "The table {{ $labels.relname }} is bloated. You should execute `VACUUM {{ $labels.relname }};`\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
-    - alert: PostgresqlInvalidIndex
+    - alert: AplusDataBaseInvalidIndex
       expr: 'pg_genaral_index_info_pg_relation_size{indexrelname=~".*ccnew.*"}'
       for: 6h
       labels:
         severity: warning
       annotations:
-        summary: Postgresql invalid index (instance {{ $labels.instance }})
+        summary: AplusDataBase invalid index (instance {{ $labels.instance }})
         description: "The table {{ $labels.relname }} has an invalid index: {{ $labels.indexrelname }}. You should execute `DROP INDEX {{ $labels.indexrelname }};`\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
