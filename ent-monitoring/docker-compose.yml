@@ -22,21 +22,6 @@ services:
     networks:
       - monitoring_network
 
-#  postgresql:
-#    image: postgres:latest
-#    container_name: postgresql
-#    restart: unless-stopped
-#    environment:
-#      POSTGRES_USER: rubyric
-#      POSTGRES_PASSWORD: rubyric
-#      POSTGRES_DB: rubyric
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data
-#    networks:
-#      - monitoring_network
-
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.15.0
     container_name: postgres-exporter
@@ -45,8 +30,6 @@ services:
       - 9187
     environment:
       - DATA_SOURCE_NAME=postgresql://rubyric:rubyric@18.117.179.158:5432/rubyric?sslmode=disable
-#    depends_on:
-#      - postgresql
     labels:
       org.label-schema.group: "monitoring"
     networks:
@@ -63,7 +46,6 @@ services:
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
-      #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
     restart: unless-stopped
     expose:
       - 8080
@@ -72,34 +54,26 @@ services:
     networks:
       - monitoring_network
 
-
-  caddy:
-    image: caddy:2.7.5
-    container_name: caddy
+  proxy:
+    image: nginx
+    container_name: proxy
     ports:
-#nodeexporter"7770:9100"
-      - "7770:9100"
-#cadvisor"7771:8080"
-      - "7771:8080"
-#postgre exporter"9093:9187"
-      - "7772:9187"
+      - "7770:7770"
+      - "7771:7771"
+      - "7772:7772"
     volumes:
-      - ./caddy:/etc/caddy
-    environment:
-      - ADMIN_USER=${ADMIN_USER:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
-      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:-$2a$14$1l.IozJx7xQRVmlkEQ32OeEEfP5mRxTpbDTCTcXRqn19gXD8YK1pO}
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./.htpasswd:/etc/nginx/.htpasswd
     restart: unless-stopped
-    networks:
-      - monitoring_network
     labels:
       org.label-schema.group: "monitoring"
-
+    networks:
+      - monitoring_network
 
 volumes:
   pgdata:
 
-
 networks:
   monitoring_network:
     driver: bridge
+
