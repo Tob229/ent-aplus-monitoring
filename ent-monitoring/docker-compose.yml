@@ -16,7 +16,7 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     restart: unless-stopped
     expose:
-      - 9100
+      - 7770
     labels:
       org.label-schema.group: "monitoring"
     networks:
@@ -42,7 +42,7 @@ services:
     container_name: postgres-exporter
     restart: unless-stopped
     expose:
-      - 9187
+      - 7772
     environment:
       - DATA_SOURCE_NAME=postgresql://rubyric:rubyric@18.117.179.158:5432/rubyric?sslmode=disable
 #    depends_on:
@@ -66,7 +66,7 @@ services:
       #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
     restart: unless-stopped
     expose:
-      - 8080
+      - 7771
     labels:
       org.label-schema.group: "monitoring"
     networks:
@@ -78,11 +78,11 @@ services:
     container_name: caddy
     ports:
 #nodeexporter"7770:9100"
-      - "7770:9100"
+      - "7770:7770"
 #cadvisor"7771:8080"
-      - "7771:8080"
+      - "7771:7771"
 #postgre exporter"9093:9187"
-      - "7772:9187"
+      - "7772:7772"
     volumes:
       - ./caddy:/etc/caddy
     environment:

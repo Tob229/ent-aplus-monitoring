@@ -2,21 +2,21 @@
     basicauth /* {
         {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
     }
-    reverse_proxy nodeexporter:9100  
+    reverse_proxy nodeexporter:7770  
 }
 
 :7771 {
     basicauth /* {
         {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
     }
-    reverse_proxy cadvisors:8080
+    reverse_proxy cadvisors:7771
 }
 
 :7772 {
     basicauth /* {
         {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
     }
-    reverse_proxy postgres-exporterr:9187
+    reverse_proxy postgres-exporterr:7772
 }
 
 
