@@ -15,8 +15,8 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     restart: unless-stopped
-    ports:
-      - "7770:9100"
+    expose:
+      - 9100
     labels:
       org.label-schema.group: "monitoring"
     networks:
@@ -41,8 +41,8 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.15.0
     container_name: postgres-exporter
     restart: unless-stopped
-    ports:
-      - "7772:9187"
+    expose:
+      - 9187
     environment:
       - DATA_SOURCE_NAME=postgresql://rubyric:rubyric@18.117.179.158:5432/rubyric?sslmode=disable
 #    depends_on:
@@ -65,12 +65,36 @@ services:
       - /var/lib/docker:/var/lib/docker:ro
       #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
     restart: unless-stopped
-    ports:
-      - "7771:8080"
+    expose:
+      - 8080
     labels:
       org.label-schema.group: "monitoring"
     networks:
       - monitoring_network
+
+
+  caddy:
+    image: caddy:2.7.5
+    container_name: caddy
+    ports:
+#nodeexporter"7770:9100"
+      - "7770:9100"
+#cadvisor"7771:8080"
+      - "7771:8080"
+#postgre exporter"9093:9187"
+      - "7772:9187"
+    volumes:
+      - ./caddy:/etc/caddy
+    environment:
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:-$2a$14$1l.IozJx7xQRVmlkEQ32OeEEfP5mRxTpbDTCTcXRqn19gXD8YK1pO}
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+    labels:
+      org.label-schema.group: "monitoring"
+
 
 volumes:
   pgdata:
