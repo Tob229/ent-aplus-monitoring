@@ -9,14 +9,14 @@
     basicauth /* {
         {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
     }
-    reverse_proxy cadvisors:7771
+    reverse_proxy cadvisor:7771
 }
 
 :7772 {
     basicauth /* {
         {$ADMIN_USER} {$ADMIN_PASSWORD_HASH}
     }
-    reverse_proxy postgres-exporterr:7772
+    reverse_proxy postgres-exporter:7772
 }
 
 
