@@ -23,11 +23,18 @@ scrape_configs:
 
   - job_name: 'aplus_ent_nodeexporter'
     scrape_interval: 5s
+    basic_auth:
+      username: 'pr0mus3r'
+      password: 'pr0mp4ssw0rd'
     static_configs:
       - targets: ['18.117.179.158:7770']
 
   - job_name: 'aplus_entcadvisor'
-    scrape_interval: 5s
+    scrape_interval: 5s    
+    basic_auth:
+      username: 'pr0mus3r'
+      password: 'pr0mp4ssw0rd'
+
     static_configs:
       - targets: ['18.117.179.158:7771']
 
@@ -61,6 +68,9 @@ scrape_configs:
 
   - job_name: 'aplus_rubyric_db'
     scrape_interval: 10s
+    basic_auth:
+      username: 'pr0mus3r'
+      password: 'pr0mp4ssw0rd'
     static_configs:
       - targets: ['18.117.179.158:7772']
 
