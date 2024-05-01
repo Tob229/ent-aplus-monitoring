@@ -38,6 +38,9 @@ scrape_configs:
 
   - job_name: 'aplus_frontend'
     metrics_path: /metrics
+    basic_auth:
+      username: 'm3tr1cs-Us3R'
+      password: 'm3tr1cs-P4ssw0rD'
     static_configs:
       - targets: ['18.117.179.158:8000']
 
